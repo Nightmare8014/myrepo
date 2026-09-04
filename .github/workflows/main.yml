@@ -8,14 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      max-parallel: 1  # 💡 CRUCIAL: Forces GitHub to launch them one-by-one so it never gets stuck in the queue
       matrix:
-        # Spawns 32 sequential runners to handle a full 15-day timeline
         runner_id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
     steps:
       - name: Calculate Dynamic Stagger Window
         run: |
-          # Each runner sleeps for an additional 11.2 hours (40400 seconds)
-          # Runner 1 launches instantly. Runner 2 waits 11.2 hours, Runner 3 waits 22.4 hours, etc.
           DELAY_SECONDS=$(( (${{ matrix.runner_id }} - 1) * 40400 ))
           echo "Runner ID ${{ matrix.runner_id }} entering background sleep phase. Waiting $DELAY_SECONDS seconds..."
           sleep $DELAY_SECONDS
