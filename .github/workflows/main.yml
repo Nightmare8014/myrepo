@@ -1,0 +1,27 @@
+name: Public Node
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-vpn:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Tailscale
+        run: |
+          curl -fsSL https://tailscale.com | sh
+          
+      - name: Connect and Advertise Exit Node
+        run: |
+          # Use userspace networking to bypass kernel level permission blocks
+          sudo tailscaled --tun=userspace-networking --socks5-server=0.0.0.0:1055 &
+          sleep 5
+          sudo tailscale up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} --advertise-exit-node --hostname=gh-public-vpn
+          
+      - name: Keep Alive Loop
+        run: |
+          echo "VPN Node is Active. Remember the 6-hour hard cutoff limit."
+          while true; do
+            echo "[$(date)] Running..."
+            sleep 300
+          done
