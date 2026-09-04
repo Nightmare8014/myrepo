@@ -1,4 +1,4 @@
-name: Public Node
+name: Public US VPN Node
 
 on:
   workflow_dispatch:
@@ -7,9 +7,13 @@ jobs:
   run-vpn:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up job
+        uses: actions/checkout@v4
+
       - name: Install Tailscale
         run: |
-          curl -fsSL https://tailscale.com | sh
+          sudo apt-get update
+          sudo apt-get install -y tailscale
           
       - name: Connect and Advertise Exit Node
         run: |
