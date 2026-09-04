@@ -1,4 +1,4 @@
-name: Public US VPN Node
+name: Public Node
 
 on:
   workflow_dispatch:
@@ -10,10 +10,11 @@ jobs:
       - name: Set up job
         uses: actions/checkout@v4
 
-      - name: Install Tailscale
+      - name: Install Tailscale Binary
         run: |
-          curl -fsSL https://tailscale.com -o install.sh
-          sudo sh install.sh
+          wget https://tailscale.com
+          tar -xzvf tailscale_1.72.1_amd64.tgz
+          sudo cp tailscale_1.72.1_amd64/tailscale* /usr/local/bin/
           
       - name: Connect and Advertise Exit Node
         run: |
