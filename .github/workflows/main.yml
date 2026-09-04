@@ -1,4 +1,4 @@
-name: Public Node
+name: Public US VPN Node
 
 on:
   workflow_dispatch:
@@ -7,21 +7,12 @@ jobs:
   run-vpn:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up job
-        uses: actions/checkout@v4
+      - name: Connect Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          args: --advertise-exit-node --hostname=gh-public-vpn
 
-      - name: Install Tailscale Binary
-        run: |
-          wget https://tailscale.com
-          tar -xzvf tailscale_1.72.1_amd64.tgz
-          sudo cp tailscale_1.72.1_amd64/tailscale* /usr/local/bin/
-          
-      - name: Connect and Advertise Exit Node
-        run: |
-          sudo tailscaled --tun=userspace-networking --socks5-server=0.0.0.0:1055 &
-          sleep 5
-          sudo tailscale up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} --advertise-exit-node --hostname=gh-public-vpn
-          
       - name: Keep Alive Loop
         run: |
           echo "VPN Node is Active. Remember the 6-hour hard cutoff limit."
